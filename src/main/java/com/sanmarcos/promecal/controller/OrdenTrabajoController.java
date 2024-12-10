@@ -105,17 +105,18 @@ public class OrdenTrabajoController {
         }
         // Si no se ha subido ningún archivo, se puede proceder con la actualización sin procesarlo
         File tempFile = null;
-        if (file != null && !file.isEmpty()) {
+        if(file==null || file.isEmpty()) {
+            ordenTrabajoService.actualizarOrdenTrabajo(id, ordenTrabajoDTO, tempFile);
+        }else{
             try {
                 // Crear archivo temporal si se ha subido un archivo
                 tempFile = File.createTempFile("documento_remision_", ".pdf");
                 file.transferTo(tempFile);
+                ordenTrabajoService.actualizarOrdenTrabajo(id, ordenTrabajoDTO, tempFile);
             } catch (IOException e) {
                 throw new RuntimeException("Error al procesar el archivo: " + e.getMessage());
             }
         }
-
-        ordenTrabajoService.actualizarOrdenTrabajo(id, ordenTrabajoDTO, tempFile);
         return ResponseEntity.ok("Orden de trabajo actualizada correctamente.");
     }
 
