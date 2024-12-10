@@ -18,7 +18,7 @@ public class CorsConfiguration implements WebMvcConfigurer {
 @Override
 public void addCorsMappings(CorsRegistry registry) {
     registry.addMapping("/**")  // Aplica CORS a todos los endpoints
-            .allowedOrigins("https://promecal-frontend-5rqq.vercel.app/")  // Especifica el origen aquí
+            .allowedOrigins("https://promecal-frontend-6tr8.vercel.app/")  // Especifica el origen aquí
             .allowedOriginPatterns("*")  // Permite cualquier origen, como en Postman
             .allowedMethods("*")
             .allowedHeaders("*")
