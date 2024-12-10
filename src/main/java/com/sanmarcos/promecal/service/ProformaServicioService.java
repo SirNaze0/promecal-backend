@@ -33,12 +33,6 @@ public class ProformaServicioService {
 
     // Obtener todas las proformas de servicio
     public List<ProformaServicioListaDTO> obtenerTodosLasProformas() {
-        List<ProformaServicio> proformas = proformaServicioRepository.findAll();
-
-        // Validación: Si no se encuentran proformas, lanzar una excepción personalizada
-        if (proformas.isEmpty()) {
-            throw new ProformaServicioNotFoundException("No se encontraron proformas de servicio.");
-        }
         return proformaServicioRepository.findAll().stream().map(proformaServicio -> {
             ProformaServicioListaDTO proformaServicioListaDTO = new ProformaServicioListaDTO();
             proformaServicioListaDTO.setDetalleServicio(proformaServicio.getDetalleServicio());
