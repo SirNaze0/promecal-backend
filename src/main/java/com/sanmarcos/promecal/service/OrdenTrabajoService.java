@@ -284,10 +284,10 @@ public class OrdenTrabajoService {
         }
 
         List<OrdenTrabajoHistorial> historial = ordenTrabajoHistorialRepository.findByOrdenTrabajoId(ordenTrabajoId);
-        if (historial.isEmpty()) {
-            // Excepción personalizada si no se encuentra historial
-            throw new HistorialNoEncontradoException("No se encontró historial para la Orden de Trabajo con ID " + ordenTrabajoId);
-        }
+//        if (historial.isEmpty()) {
+//            // Excepción personalizada si no se encuentra historial
+//            throw new HistorialNoEncontradoException("No se encontró historial para la Orden de Trabajo con ID " + ordenTrabajoId);
+//        }
 
         return historial.stream()
                 .map(this::convertirAHistorialDTO)
