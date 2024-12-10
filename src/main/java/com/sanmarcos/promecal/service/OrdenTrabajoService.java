@@ -239,10 +239,6 @@ public class OrdenTrabajoService {
         // Verificar si hay un archivo y procesarlo
         if (file != null && file.length() > 0) {
             Documento documentoExistente = ordenTrabajo.getDocumento();
-            if (documentoExistente == null || documentoExistente.getRutaArchivo() == null) {
-                throw new DocumentoNoEncontradoException("No se encuentra el documento asociado a la orden de trabajo.");
-            }
-
             String urlAnterior = documentoExistente.getRutaArchivo();
             String nombreArchivoNuevo = file.getName();
 
