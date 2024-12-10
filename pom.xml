@@ -120,8 +120,122 @@
 		</dependency>
 		<dependency>
 			<groupId>com.itextpdf</groupId>
-			<artifactId>itext7-core</artifactId>
-			<version>7.2.5</version> <!-- Cambia esta versión si es necesario -->
+			<artifactId>barcodes</artifactId>
+			<version>7.1.16</version>
+			<scope>system</scope>
+			<systemPath>${project.basedir}/lib/barcodes-7.1.16.jar</systemPath>
+		</dependency>
+
+		<dependency>
+			<groupId>com.itextpdf</groupId>
+			<artifactId>font-asian</artifactId>
+			<version>7.1.16</version>
+			<scope>system</scope>
+			<systemPath>${project.basedir}/lib/font-asian-7.1.16.jar</systemPath>
+		</dependency>
+
+		<dependency>
+			<groupId>com.itextpdf</groupId>
+			<artifactId>forms</artifactId>
+			<version>7.1.16</version>
+			<scope>system</scope>
+			<systemPath>${project.basedir}/lib/forms-7.1.16.jar</systemPath>
+		</dependency>
+
+		<dependency>
+			<groupId>com.itextpdf</groupId>
+			<artifactId>hyph</artifactId>
+			<version>7.1.16</version>
+			<scope>system</scope>
+			<systemPath>${project.basedir}/lib/hyph-7.1.16.jar</systemPath>
+		</dependency>
+
+		<dependency>
+			<groupId>com.itextpdf</groupId>
+			<artifactId>io</artifactId>
+			<version>7.1.16</version>
+			<scope>system</scope>
+			<systemPath>${project.basedir}/lib/io-7.1.16.jar</systemPath>
+		</dependency>
+
+		<dependency>
+			<groupId>com.itextpdf</groupId>
+			<artifactId>kernel</artifactId>
+			<version>7.1.16</version>
+			<scope>system</scope>
+			<systemPath>${project.basedir}/lib/kernel-7.1.16.jar</systemPath>
+		</dependency>
+
+		<dependency>
+			<groupId>com.itextpdf</groupId>
+			<artifactId>layout</artifactId>
+			<version>7.1.16</version>
+			<scope>system</scope>
+			<systemPath>${project.basedir}/lib/layout-7.1.16.jar</systemPath>
+		</dependency>
+
+		<dependency>
+			<groupId>com.itextpdf</groupId>
+			<artifactId>log4j</artifactId>
+			<version>1.2.17</version>
+			<scope>system</scope>
+			<systemPath>${project.basedir}/lib/log4j-1.2.17.jar</systemPath>
+		</dependency>
+
+		<dependency>
+			<groupId>com.itextpdf</groupId>
+			<artifactId>pdfa</artifactId>
+			<version>7.1.16</version>
+			<scope>system</scope>
+			<systemPath>${project.basedir}/lib/pdfa-7.1.16.jar</systemPath>
+		</dependency>
+
+		<dependency>
+			<groupId>com.itextpdf</groupId>
+			<artifactId>pdftest</artifactId>
+			<version>7.1.16</version>
+			<scope>system</scope>
+			<systemPath>${project.basedir}/lib/pdftest-7.1.16.jar</systemPath>
+		</dependency>
+
+		<dependency>
+			<groupId>com.itextpdf</groupId>
+			<artifactId>sign</artifactId>
+			<version>7.1.16</version>
+			<scope>system</scope>
+			<systemPath>${project.basedir}/lib/sign-7.1.16.jar</systemPath>
+		</dependency>
+
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>1.7.9</version>
+			<scope>system</scope>
+			<systemPath>${project.basedir}/lib/slf4j-api-1.7.9.jar</systemPath>
+		</dependency>
+
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-log4j12</artifactId>
+			<version>1.7.9</version>
+			<scope>system</scope>
+			<systemPath>${project.basedir}/lib/slf4j-log4j12-1.7.9.jar</systemPath>
+		</dependency>
+
+		<dependency>
+			<groupId>com.itextpdf</groupId>
+			<artifactId>styled-xml-parser</artifactId>
+			<version>7.1.16</version>
+			<scope>system</scope>
+			<systemPath>${project.basedir}/lib/styled-xml-parser-7.1.16.jar</systemPath>
+		</dependency>
+
+		<dependency>
+			<groupId>com.itextpdf</groupId>
+			<artifactId>svg</artifactId>
+			<version>7.1.16</version>
+			<scope>system</scope>
+			<systemPath>${project.basedir}/lib/svg-7.1.16.jar</systemPath>
 		</dependency>
 
 	</dependencies>
