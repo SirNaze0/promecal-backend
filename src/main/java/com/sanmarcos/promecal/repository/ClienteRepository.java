@@ -8,4 +8,5 @@ import java.util.Optional;
 public interface ClienteRepository extends JpaRepository<Cliente, Long> {
     // Metodo para encontrar un cliente por su DNI
     Optional<Cliente> findByDni(String dni);
+    boolean existsByDni(String dni);
 }

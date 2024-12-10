@@ -1,5 +1,7 @@
 package com.sanmarcos.promecal.model.dto;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,13 +13,12 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class OrdenTrabajoDTO {
-
+    @NotBlank(message = "El DNI del cliente es obligatorio.")
     private String dni;
-
     private String nombrecompleto;
-
+    @NotNull(message = "La fecha es obligatoria.")
     private LocalDateTime fecha;
-
+    @NotBlank(message = "La descripción no puede estar vacía.")
     private String descripcion;
 
     private String modelo;

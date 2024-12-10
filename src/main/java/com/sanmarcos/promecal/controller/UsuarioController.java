@@ -1,5 +1,6 @@
 package com.sanmarcos.promecal.controller;
 
+import com.sanmarcos.promecal.exception.*;
 import com.sanmarcos.promecal.model.dto.UsuarioDTO;
 import com.sanmarcos.promecal.model.dto.UsuarioListaDTO;
 import com.sanmarcos.promecal.model.dto.UsuarioVistaDTO;
@@ -19,48 +20,45 @@ public class UsuarioController {
 
     //Endpoint para obtener la lista de usuario
     @GetMapping
-    public List<UsuarioListaDTO> obtenerTodosLosUsuarios() {
-        return usuarioService.obtenerTodosLosUsuarios();
+    public ResponseEntity<List<UsuarioListaDTO>> obtenerTodosLosUsuarios() {
+        List<UsuarioListaDTO> usuarios = usuarioService.obtenerTodosLosUsuarios();
+
+        // Validamos si no se encontraron usuarios
+        if (usuarios.isEmpty()) {
+            throw new UsuariosNoEncontradosException("No se encontraron usuarios en el sistema.");
+        }
+
+        return ResponseEntity.ok(usuarios);
     }
 
-    //Endpoint para guardar un usuario
+    // Endpoint para guardar un usuario
     @PostMapping
     public ResponseEntity<String> insertarUsuario(@RequestBody UsuarioDTO usuarioDTO) {
-        try {
-            usuarioService.insertarUsuario(usuarioDTO);
-            return new ResponseEntity<>(HttpStatus.CREATED);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al guardar usuario" + e.getMessage());
-        }
+        usuarioService.insertarUsuario(usuarioDTO);
+        return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
-    //Endpoint para obtener los detalles un usuario por id
+    // Endpoint para obtener los detalles de un usuario por id
     @GetMapping("/{id}")
     public ResponseEntity<UsuarioVistaDTO> obtenerDetallesUsuario(@PathVariable Long id) {
-        try {
-            UsuarioVistaDTO usuarioVistaDTO=usuarioService.obtenerUsuarioPorId(id);
-            return new ResponseEntity<>(usuarioVistaDTO, HttpStatus.OK);
-        } catch (RuntimeException e) {
-            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
-        }
+        UsuarioVistaDTO usuarioVistaDTO = usuarioService.obtenerUsuarioPorId(id);
+        return new ResponseEntity<>(usuarioVistaDTO, HttpStatus.OK);
     }
 
-    // Endpoint para actualizar un usuario
     @PutMapping("/{id}")
     public ResponseEntity<String> actualizarUsuario(@PathVariable Long id, @RequestBody UsuarioVistaDTO usuarioVistaDTO) {
-        try {
-            usuarioService.actualizarUsuario(id, usuarioVistaDTO);
-            return new ResponseEntity<>(HttpStatus.OK);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al actualizar el usuario" + e.getMessage());
-        }
+        // Llamada al servicio para actualizar el usuario
+        usuarioService.actualizarUsuario(id, usuarioVistaDTO);
+        return new ResponseEntity<>("Usuario actualizado exitosamente", HttpStatus.OK);
     }
 
-    // Eliminar un usuario
     @DeleteMapping("/{id}")
     public ResponseEntity<String> eliminarUsuario(@PathVariable Long id) {
+        // Llamada al servicio para eliminar el usuario
         usuarioService.eliminarUsuario(id);
         return ResponseEntity.noContent().build();  // Respuesta 204 No Content
     }
+
+
 
 }

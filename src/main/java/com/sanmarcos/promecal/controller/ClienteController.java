@@ -1,9 +1,6 @@
 package com.sanmarcos.promecal.controller;
-
 import com.sanmarcos.promecal.model.dto.ClienteDTO;
 import com.sanmarcos.promecal.model.dto.ClienteListaDTO;
-import com.sanmarcos.promecal.model.dto.UsuarioDTO;
-import com.sanmarcos.promecal.model.dto.UsuarioListaDTO;
 import com.sanmarcos.promecal.service.ClienteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -27,41 +24,27 @@ public class ClienteController {
     //Endpoint para guardar un cliente
     @PostMapping
     public ResponseEntity<String> insertarCliente(@RequestBody ClienteDTO clienteDTO) {
-        try {
-            clienteService.insertarCliente(clienteDTO);
-            return new ResponseEntity<>(HttpStatus.CREATED);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al guardar cliente" + e.getMessage());
-        }
+        clienteService.insertarCliente(clienteDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body("Cliente registrado con éxito.");
     }
-
     //Endpoint para obtener los detalles de un cliente por id
     @GetMapping("/{id}")
     public ResponseEntity<ClienteDTO> obtenerDetallesCliente(@PathVariable Long id) {
-        try {
-            ClienteDTO clienteDTO = clienteService.obtenerClientePorId(id);
-            return new ResponseEntity<>(clienteDTO, HttpStatus.OK);
-        } catch (RuntimeException e) {
-            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
-        }
+        ClienteDTO clienteDTO = clienteService.obtenerClientePorId(id);
+        return new ResponseEntity<>(clienteDTO, HttpStatus.OK);
     }
 
-    // Endpoint para actualizar cliente
     @PutMapping("/{id}")
     public ResponseEntity<String> actualizarCliente(@PathVariable Long id, @RequestBody ClienteDTO clienteDTO) {
-        try {
-            clienteService.actualizarCliente(id, clienteDTO);
-            return new ResponseEntity<>(HttpStatus.OK);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al actualizar el cliente" + e.getMessage());
-        }
+        clienteService.actualizarCliente(id, clienteDTO);
+        return ResponseEntity.ok("Cliente actualizado con éxito.");
     }
 
-    // Eliminar un cliente
     @DeleteMapping("/{id}")
     public ResponseEntity<String> eliminarCliente(@PathVariable Long id) {
         clienteService.eliminarCliente(id);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.noContent().build();  // Respuesta 204 No Content
     }
+
 
 }

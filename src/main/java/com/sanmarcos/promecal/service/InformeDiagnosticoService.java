@@ -2,9 +2,14 @@ package com.sanmarcos.promecal.service;
 
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfWriter;
+import com.sanmarcos.promecal.exception.FechaInvalidaException;
+import com.sanmarcos.promecal.exception.GeneracionPDFException;
+import com.sanmarcos.promecal.exception.NumeroSerieDuplicadoException;
+import com.sanmarcos.promecal.exception.OrdenTrabajoNoEncontradaException;
 import com.sanmarcos.promecal.model.dto.InformeDiagnosticoDTO;
 import java.io.IOException;
 import com.sanmarcos.promecal.model.entity.InformeDiagnostico;
+import com.sanmarcos.promecal.model.entity.OrdenTrabajo;
 import com.sanmarcos.promecal.repository.InformeDiagnosticoRepository;
 import com.sanmarcos.promecal.repository.OrdenTrabajoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +31,21 @@ public class InformeDiagnosticoService {
     private EmailService emailService;
 
     public void insertarInformeDiagnostico(InformeDiagnosticoDTO informeDiagnosticoDTO, File file) throws IOException {
-        //Crear el Informe Diagnostico
+        // Validar si el orden de trabajo existe
+        OrdenTrabajo ordenTrabajo = ordenTrabajoRepository.findById(informeDiagnosticoDTO.getId_ordenTrabajo())
+                .orElseThrow(() -> new OrdenTrabajoNoEncontradaException("Orden de trabajo con ID " + informeDiagnosticoDTO.getId_ordenTrabajo() + " no encontrada"));
+
+        // Validar si el número de serie es único
+        if (informeDiagnosticoRepository.existsByNumeroSerie(informeDiagnosticoDTO.getNumeroSerie())) {
+            throw new NumeroSerieDuplicadoException("El número de serie " + informeDiagnosticoDTO.getNumeroSerie() + " ya está registrado en otro informe diagnóstico.");
+        }
+
+        // Validar que la fecha no sea nula
+        if (informeDiagnosticoDTO.getFecha() == null) {
+            throw new FechaInvalidaException("La fecha del informe diagnóstico no puede ser nula.");
+        }
+
+        // Crear el Informe Diagnóstico
         InformeDiagnostico informeDiagnostico = new InformeDiagnostico();
         informeDiagnostico.setFecha(informeDiagnosticoDTO.getFecha());
         informeDiagnostico.setEstadoActual(informeDiagnosticoDTO.getEstadoActual());
@@ -35,25 +54,28 @@ public class InformeDiagnosticoService {
         informeDiagnostico.setFactibilidadReparacion(informeDiagnosticoDTO.getFactibilidadReparacion());
         informeDiagnostico.setRecomendaciones(informeDiagnosticoDTO.getRecomendaciones());
         informeDiagnostico.setDiagnosticoTecnico(informeDiagnosticoDTO.getDiagnosticoTecnico());
-        informeDiagnostico.setCodigoOrdenTrabajo(ordenTrabajoRepository.findById(informeDiagnosticoDTO.getId_ordenTrabajo()).orElseThrow(()-> new RuntimeException("Orden Trabajo no encontrado")).getCodigo());
+        informeDiagnostico.setCodigoOrdenTrabajo(ordenTrabajo.getCodigo());
         informeDiagnostico.setEquipoIrreparable(informeDiagnosticoDTO.getEquipoirreparable());
-        //Subir el archivo si hay
-        if(file==null){
+
+        // Subir el archivo si hay
+        if (file == null) {
             informeDiagnostico.setObservacionesAdicionales("No hay");
-        }else{
-            informeDiagnostico.setObservacionesAdicionales(driveService.uploadPdfToDrive(file,"observaciones"));
+        } else {
+            informeDiagnostico.setObservacionesAdicionales(driveService.uploadPdfToDrive(file, "observaciones"));
         }
+
         // Generar el PDF del informe
-        File pdfcreado= generarPDF(informeDiagnostico);
+        File pdfCreado = generarPDF(informeDiagnostico);
 
         informeDiagnosticoRepository.save(informeDiagnostico);
-        String name=driveService.uploadPdfToDrive(pdfcreado,"informe");
+        String name = driveService.uploadPdfToDrive(pdfCreado, "informe");
         System.out.println(name);
-        emailService.enviarCorreo("Jefferson.asencios@unmsm.edu.pe",name);
-        //Intentar eliminar el archivo PDF inmediatamente después de enviarlo
+        emailService.enviarCorreo("Jefferson.asencios@unmsm.edu.pe", name);
+
+        // Intentar eliminar el archivo PDF inmediatamente después de enviarlo
         try {
-            if (pdfcreado.exists()) {
-                boolean eliminado = pdfcreado.delete();
+            if (pdfCreado.exists()) {
+                boolean eliminado = pdfCreado.delete();
                 if (eliminado) {
                     System.out.println("El archivo PDF se eliminó exitosamente.");
                 } else {
@@ -64,6 +86,7 @@ public class InformeDiagnosticoService {
             System.out.println("Error al intentar eliminar el archivo PDF: " + e.getMessage());
         }
     }
+
 
     public File generarPDF(InformeDiagnostico informeDiagnostico) throws IOException {
         // Crear un archivo temporal
@@ -98,9 +121,9 @@ public class InformeDiagnosticoService {
             System.out.println("PDF creado exitosamente");
 
         } catch (FileNotFoundException ex) {
-            System.out.println("Error al crear el archivo: " + ex.getMessage());
+            throw new GeneracionPDFException("No se pudo crear el archivo PDF debido a un error con el sistema de archivos ");
         } catch (Exception ex) {
-            System.out.println("Error al generar el PDF: " + ex.getMessage());
+            throw new GeneracionPDFException("Ocurrió un error inesperado al generar el PDF");
         }
 
         return file; // Retorna el archivo creado
