@@ -1,7 +1,4 @@
 package com.sanmarcos.promecal.service;
-
-import com.itextpdf.kernel.pdf.PdfDocument;
-import com.itextpdf.kernel.pdf.PdfWriter;
 import com.sanmarcos.promecal.exception.FechaInvalidaException;
 import com.sanmarcos.promecal.exception.GeneracionPDFException;
 import com.sanmarcos.promecal.exception.NumeroSerieDuplicadoException;
@@ -12,12 +9,13 @@ import com.sanmarcos.promecal.model.entity.InformeDiagnostico;
 import com.sanmarcos.promecal.model.entity.OrdenTrabajo;
 import com.sanmarcos.promecal.repository.InformeDiagnosticoRepository;
 import com.sanmarcos.promecal.repository.OrdenTrabajoRepository;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.PDPageContentStream;
+import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.itextpdf.layout.Document;
-import com.itextpdf.layout.element.Paragraph;
 import java.io.File;
-import java.io.FileNotFoundException;
 
 @Service
 public class InformeDiagnosticoService {
@@ -86,8 +84,6 @@ public class InformeDiagnosticoService {
             System.out.println("Error al intentar eliminar el archivo PDF: " + e.getMessage());
         }
     }
-
-
     public File generarPDF(InformeDiagnostico informeDiagnostico) throws IOException {
         // Crear un archivo temporal
         File tempFile = File.createTempFile("informe_", ".pdf");
@@ -98,34 +94,62 @@ public class InformeDiagnosticoService {
         // Extraer la parte entre "informe_" y ".pdf"
         String nameWithoutPrefixAndSuffix = fileName.substring("informe_".length(), fileName.lastIndexOf(".pdf"));
 
-        File file = new File("informe_" + nameWithoutPrefixAndSuffix+ ".pdf");
+        File file = new File("informe_" + nameWithoutPrefixAndSuffix + ".pdf");
 
-        try (PdfWriter pdfWriter = new PdfWriter(file)) {
-            PdfDocument pdfDocument = new PdfDocument(pdfWriter);
-            Document document = new Document(pdfDocument);
+        // Crear un nuevo documento PDF
+        PDDocument document = new PDDocument();
 
-            // Agregar título al PDF
-            document.add(new Paragraph("Informe Diagnóstico").setBold().setFontSize(16));
+        try {
+            // Crear una nueva página
+            PDPage page = new PDPage();
+            document.addPage(page);
 
-            document.add(new Paragraph("Fecha: " + informeDiagnostico.getFecha()));
-            document.add(new Paragraph("Estado Actual: " + informeDiagnostico.getEstadoActual()));
-            document.add(new Paragraph("Número de Serie: " + informeDiagnostico.getNumeroSerie()));
-            document.add(new Paragraph("Factibilidad de Reparación: " + informeDiagnostico.getFactibilidadReparacion()));
-            document.add(new Paragraph("Recomendaciones: " + informeDiagnostico.getRecomendaciones()));
-            document.add(new Paragraph("Diagnóstico Técnico: " + informeDiagnostico.getDiagnosticoTecnico()));
-            document.add(new Paragraph("Observaciones Adicionales: " + informeDiagnostico.getObservacionesAdicionales()));
+            // Crear un flujo de contenido en la página
+            PDPageContentStream contentStream = new PDPageContentStream(document, page);
+            contentStream.beginText();
+            contentStream.setFont(PDType1Font.HELVETICA_BOLD, 16);
+            contentStream.newLineAtOffset(100, 750);  // Posición en la página
 
-            // Cerrar el documento
+            // Agregar el título al PDF
+            contentStream.showText("Informe Diagnóstico");
+            contentStream.newLine();
+
+            // Establecer la fuente para el contenido
+            contentStream.setFont(PDType1Font.HELVETICA, 12);
+
+            // Agregar los datos del informe
+            contentStream.showText("Fecha: " + informeDiagnostico.getFecha());
+            contentStream.newLine();
+            contentStream.showText("Estado Actual: " + informeDiagnostico.getEstadoActual());
+            contentStream.newLine();
+            contentStream.showText("Número de Serie: " + informeDiagnostico.getNumeroSerie());
+            contentStream.newLine();
+            contentStream.showText("Factibilidad de Reparación: " + informeDiagnostico.getFactibilidadReparacion());
+            contentStream.newLine();
+            contentStream.showText("Recomendaciones: " + informeDiagnostico.getRecomendaciones());
+            contentStream.newLine();
+            contentStream.showText("Diagnóstico Técnico: " + informeDiagnostico.getDiagnosticoTecnico());
+            contentStream.newLine();
+            contentStream.showText("Observaciones Adicionales: " + informeDiagnostico.getObservacionesAdicionales());
+            contentStream.newLine();
+
+            // Cerrar el flujo de contenido
+            contentStream.endText();
+            contentStream.close();
+
+            // Guardar el documento en el archivo
+            document.save(file);
             document.close();
 
             System.out.println("PDF creado exitosamente");
 
-        } catch (FileNotFoundException ex) {
-            throw new GeneracionPDFException("No se pudo crear el archivo PDF debido a un error con el sistema de archivos ");
-        } catch (Exception ex) {
-            throw new GeneracionPDFException("Ocurrió un error inesperado al generar el PDF");
+        } catch (IOException e) {
+            throw new GeneracionPDFException("No se pudo crear el archivo PDF debido a un error con el sistema de archivos.");
+        } catch (Exception e) {
+            throw new GeneracionPDFException("Ocurrió un error inesperado al generar el PDF.");
         }
 
         return file; // Retorna el archivo creado
     }
+
 }
