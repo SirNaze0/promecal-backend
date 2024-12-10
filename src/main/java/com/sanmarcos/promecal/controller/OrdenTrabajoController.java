@@ -91,7 +91,6 @@ public class OrdenTrabajoController {
         List<OrdenTrabajoHistorialDTO> historial = ordenTrabajoService.obtenerHistorialDeOrden(id);
         return ResponseEntity.ok(historial);
     }
-    // Endpoint para actualizar la orden de trabajo
     @PutMapping("/{id}")
     public ResponseEntity<String> actualizarOrdenTrabajo(@PathVariable Long id,
                                                          @RequestPart("orden") OrdenTrabajoDTO ordenTrabajoDTO,
@@ -99,24 +98,26 @@ public class OrdenTrabajoController {
         if (id <= 0) {
             throw new IllegalArgumentException("El ID de la orden de trabajo debe ser mayor a cero.");
         }
-        // Verificar que el archivo sea un PDF
-        if (!Objects.requireNonNull(file.getContentType()).equalsIgnoreCase("application/pdf")) {
-            throw new TipoArchivoInvalidoException("El archivo debe ser un PDF");
-        }
-        // Si no se ha subido ningún archivo, se puede proceder con la actualización sin procesarlo
+
+        // Si no se ha subido un archivo, pasamos un valor null
         File tempFile = null;
-        if(file==null || file.isEmpty()) {
-            ordenTrabajoService.actualizarOrdenTrabajo(id, ordenTrabajoDTO, tempFile);
-        }else{
+        if (file != null && !file.isEmpty()) {
+            // Si el archivo no está vacío, validamos que sea un PDF
+            if (!Objects.requireNonNull(file.getContentType()).equalsIgnoreCase("application/pdf")) {
+                throw new TipoArchivoInvalidoException("El archivo debe ser un PDF");
+            }
             try {
                 // Crear archivo temporal si se ha subido un archivo
                 tempFile = File.createTempFile("documento_remision_", ".pdf");
                 file.transferTo(tempFile);
-                ordenTrabajoService.actualizarOrdenTrabajo(id, ordenTrabajoDTO, tempFile);
             } catch (IOException e) {
                 throw new RuntimeException("Error al procesar el archivo: " + e.getMessage());
             }
         }
+
+        // Llamar al servicio, pasando null si no se ha subido archivo
+        ordenTrabajoService.actualizarOrdenTrabajo(id, ordenTrabajoDTO, tempFile);
+
         return ResponseEntity.ok("Orden de trabajo actualizada correctamente.");
     }
 

@@ -233,13 +233,10 @@ public class OrdenTrabajoService {
                 .orElseThrow(() -> new ClienteNoEncontradoException("Cliente no encontrado"));
         ordenTrabajo.setCliente(cliente);
 
-        // Guardar la orden de trabajo con los nuevos valores
-        ordenTrabajoRepository.save(ordenTrabajo);
-
-        // Verificar si hay un archivo y procesarlo
+        // Verificar si hay un archivo y procesarlo (solo si no es nulo)
         if (file != null && file.length() > 0) {
             Documento documentoExistente = ordenTrabajo.getDocumento();
-            String urlAnterior = documentoExistente.getRutaArchivo();
+            String urlAnterior = documentoExistente != null ? documentoExistente.getRutaArchivo() : null;
             String nombreArchivoNuevo = file.getName();
 
             // Subir el archivo a Google Drive
@@ -249,14 +246,19 @@ public class OrdenTrabajoService {
             registrarHistorial(ordenTrabajo, "documento", urlAnterior, nuevaUrl);
 
             // Actualizar la ruta y los datos del documento
+            if (documentoExistente == null) {
+                documentoExistente = new Documento();  // Crear nuevo documento si no existe
+                ordenTrabajo.setDocumento(documentoExistente);
+            }
             documentoExistente.setRutaArchivo(nuevaUrl);
             documentoExistente.setFechaSubida(LocalDateTime.now());
             documentoExistente.setNombre(nombreArchivoNuevo);
-
-            // Guardar la orden de trabajo con el documento actualizado
-            ordenTrabajoRepository.save(ordenTrabajo);
         }
+
+        // Guardar la orden de trabajo con todos los cambios (se hace solo una vez al final)
+        ordenTrabajoRepository.save(ordenTrabajo);
     }
+
 
     private void registrarHistorial(OrdenTrabajo ordenTrabajo, String campo, Object valorAnterior, Object valorNuevo) {
         // Considerar como vacío cualquier valor no significativo
