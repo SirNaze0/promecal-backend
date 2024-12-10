@@ -65,6 +65,10 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleConflictException(Exception ex, HttpServletRequest request) {
         return buildErrorResponse(ex, HttpStatus.CONFLICT, request);
     }
+    @ExceptionHandler(GeneracionPDFException.class)
+    public ResponseEntity<String> handleGeneracionPDFException(GeneracionPDFException ex) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al generar el PDF: " + ex.getMessage());
+    }
 
     // Manejo de excepciones internas del servidor
     @ExceptionHandler({DocumentoEliminacionException.class, InformeDiagnosticoException.class})

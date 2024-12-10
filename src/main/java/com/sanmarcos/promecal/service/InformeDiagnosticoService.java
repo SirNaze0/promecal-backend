@@ -3,6 +3,7 @@ package com.sanmarcos.promecal.service;
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfWriter;
 import com.sanmarcos.promecal.exception.FechaInvalidaException;
+import com.sanmarcos.promecal.exception.GeneracionPDFException;
 import com.sanmarcos.promecal.exception.NumeroSerieDuplicadoException;
 import com.sanmarcos.promecal.exception.OrdenTrabajoNoEncontradaException;
 import com.sanmarcos.promecal.model.dto.InformeDiagnosticoDTO;
@@ -120,9 +121,9 @@ public class InformeDiagnosticoService {
             System.out.println("PDF creado exitosamente");
 
         } catch (FileNotFoundException ex) {
-            System.out.println("Error al crear el archivo: " + ex.getMessage());
+            throw new GeneracionPDFException("No se pudo crear el archivo PDF debido a un error con el sistema de archivos ");
         } catch (Exception ex) {
-            System.out.println("Error al generar el PDF: " + ex.getMessage());
+            throw new GeneracionPDFException("Ocurrió un error inesperado al generar el PDF");
         }
 
         return file; // Retorna el archivo creado

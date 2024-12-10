@@ -1,5 +1,4 @@
 package com.sanmarcos.promecal.controller;
-import com.sanmarcos.promecal.exception.InformeDiagnosticoException;
 import com.sanmarcos.promecal.exception.TipoArchivoInvalidoException;
 import com.sanmarcos.promecal.model.dto.InformeDiagnosticoDTO;
 import com.sanmarcos.promecal.service.InformeDiagnosticoService;
@@ -8,7 +7,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.io.File;
 import java.util.Objects;
 
@@ -20,28 +18,22 @@ public class InformeDiagnosticoController {
 
     //Endpoint para guardar un informeDiagnostico
     @PostMapping
-    public ResponseEntity<String> insertarInformeDiagnostico(@RequestPart("informe") InformeDiagnosticoDTO informeDiagnosticoDTO,
-                                                             @RequestPart(value = "file", required = false) MultipartFile file) {
-        // Verificar que el archivo sea un PDF
-        if (!Objects.requireNonNull(file.getContentType()).equalsIgnoreCase("application/pdf")) {
-            throw new TipoArchivoInvalidoException("El archivo debe ser un PDF");
-        }
+    public ResponseEntity<Void> insertarInformeDiagnostico(
+            @RequestPart("informe") InformeDiagnosticoDTO informeDiagnosticoDTO,
+            @RequestPart(value = "file", required = false) MultipartFile file) throws Exception {
         if (file != null && !file.isEmpty()) {
-            try {
-                // Crear archivo temporal si se ha subido un archivo
-                File tempFile = File.createTempFile("observaciones_", ".pdf");
-                file.transferTo(tempFile);
-                informeDiagnosticoService.insertarInformeDiagnostico(informeDiagnosticoDTO, tempFile);
-            } catch (Exception e) {
-                throw new InformeDiagnosticoException("Error al guardar el informe diagnóstico");
+            if (!Objects.requireNonNull(file.getContentType()).equalsIgnoreCase("application/pdf")) {
+                throw new TipoArchivoInvalidoException("El archivo debe ser un PDF");
             }
+
+            // Crear archivo temporal si se ha subido un archivo
+            File tempFile = File.createTempFile("observaciones_", ".pdf");
+            file.transferTo(tempFile);
+            informeDiagnosticoService.insertarInformeDiagnostico(informeDiagnosticoDTO, tempFile);
         } else {
-            try {
-                informeDiagnosticoService.insertarInformeDiagnostico(informeDiagnosticoDTO, null);
-            } catch (Exception e) {
-                throw new InformeDiagnosticoException("Error al guardar el informe diagnóstico");
-            }
+            informeDiagnosticoService.insertarInformeDiagnostico(informeDiagnosticoDTO, null);
         }
-        return new ResponseEntity<>(HttpStatus.CREATED);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
+
 }
