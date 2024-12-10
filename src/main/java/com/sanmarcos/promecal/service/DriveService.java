@@ -24,7 +24,7 @@ public class DriveService {
 
     private static String getPathToGoodleCredentials() {
         String currentDirectory = System.getProperty("user.dir");
-        Path filePath = Paths.get(currentDirectory, "cred.json");
+        Path filePath = Paths.get(currentDirectory, "cred2.json");
         return filePath.toString();
     }
     public String uploadPdfToDrive(File file, String opcion) {
