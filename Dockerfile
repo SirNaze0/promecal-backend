@@ -1,4 +1,4 @@
-FROM amazoncorretto:21-alpine-jdf
+FROM amazoncorretto:21-alpine-jdk
 
 COPY target/promecal-0.0.1-SNAPSHOT.jar app.jar
 
